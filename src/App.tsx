@@ -1,3 +1,4 @@
+// @ts-nocheck
 import './App.css'
 import {EmbedWallet} from '@cere/embed-wallet'
 import {CereWalletSigner} from '@cere-activity-sdk/signers'

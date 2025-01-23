@@ -14,13 +14,14 @@ enum WalletConnectionState {
 
 function App () {
   const [walletConnectionState, setWalletConnectionState] = useState(WalletConnectionState.DISCONNECTED)
+  const [isDispatching, setDispatching] = useState(false)
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
 
   const wallet = useMemo(() => new EmbedWallet(), [])
 
   const connect = async () => {
-      setWalletConnectionState(WalletConnectionState.CONNECTING)
+    setWalletConnectionState(WalletConnectionState.CONNECTING)
     try {
       await wallet.init({
         appId: 'cere-data-wallet-integration-example',
@@ -45,6 +46,7 @@ function App () {
   }
 
   const send = async () => {
+    setDispatching(true)
     try {
       const cereWalletSigner = new CereWalletSigner(wallet)
       const cereWalletCipher = new CereWalletCipher(wallet) // OR new NoOpCipher() | see README.md to learn more about Cere Ciphers.
@@ -72,6 +74,8 @@ function App () {
     } catch (error) {
       console.log(error)
       setError(`Something went wrong: ${error}`)
+    } finally {
+      setDispatching(false)
     }
   }
 
@@ -80,7 +84,7 @@ function App () {
       <h1>Cere Data Wallet</h1>
       <h2>integration example</h2>
       {
-        walletConnectionState === WalletConnectionState.CONNECTING ? (
+        isDispatching || walletConnectionState === WalletConnectionState.CONNECTING ? (
           <DNA
             height="80"
             width="80"

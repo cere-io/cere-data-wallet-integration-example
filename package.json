@@ -16,6 +16,7 @@
     "@cere/embed-wallet": "^0.23.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-loader-spinner": "^6.1.6",
     "uuid": "^11.0.5"
   },
   "devDependencies": {

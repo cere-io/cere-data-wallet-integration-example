@@ -4,15 +4,23 @@ import { EmbedWallet } from '@cere/embed-wallet'
 import { CereWalletSigner } from '@cere-activity-sdk/signers'
 import { ActivityEvent, EventSource } from '@cere-activity-sdk/events'
 import { CereWalletCipher } from '@cere-activity-sdk/ciphers'
+import { DNA } from 'react-loader-spinner'
+
+enum WalletConnectionState {
+  DISCONNECTED,
+  CONNECTING,
+  CONNECTED,
+}
 
 function App () {
-  const [isConnected, setConnected] = useState(false)
+  const [walletConnectionState, setWalletConnectionState] = useState(WalletConnectionState.DISCONNECTED)
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
 
   const wallet = useMemo(() => new EmbedWallet(), [])
 
   const connect = async () => {
+      setWalletConnectionState(WalletConnectionState.CONNECTING)
     try {
       await wallet.init({
         appId: 'cere-data-wallet-integration-example',
@@ -28,7 +36,7 @@ function App () {
       await wallet.isReady
       await wallet.connect()
 
-      setConnected(true)
+      setWalletConnectionState(WalletConnectionState.CONNECTED)
       setSuccessMsg('Cere Wallet connected')
     } catch (error) {
       console.log(error)
@@ -72,7 +80,15 @@ function App () {
       <h1>Cere Data Wallet</h1>
       <h2>integration example</h2>
       {
-        isConnected ? (
+        walletConnectionState === WalletConnectionState.CONNECTING ? (
+          <DNA
+            height="80"
+            width="80"
+            ariaLabel="dna-loading"
+            wrapperStyle={{}}
+            wrapperClass="dna-wrapper"
+          />
+        ) : walletConnectionState === WalletConnectionState.CONNECTED ? (
           <div className="card">
             <button onClick={send}>
               Send test event

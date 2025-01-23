@@ -17,6 +17,7 @@ function App () {
   const [isDispatching, setDispatching] = useState(false)
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [eventSource, setEventSource] = useState<EventSource>()
 
   const wallet = useMemo(() => new EmbedWallet(), [])
 
@@ -37,17 +38,6 @@ function App () {
       await wallet.isReady
       await wallet.connect()
 
-      setWalletConnectionState(WalletConnectionState.CONNECTED)
-      setSuccessMsg('Cere Wallet connected')
-    } catch (error) {
-      console.log(error)
-      setError(`Something went wrong: ${error}`)
-    }
-  }
-
-  const send = async () => {
-    setDispatching(true)
-    try {
       const cereWalletSigner = new CereWalletSigner(wallet)
       const cereWalletCipher = new CereWalletCipher(wallet) // OR new NoOpCipher() | see README.md to learn more about Cere Ciphers.
 
@@ -63,14 +53,31 @@ function App () {
       })
 
       await eventSource.connect()
+      setEventSource(eventSource)
 
-      const payload = { // Payload is a json object that can include any fields. can be empty.
+      setWalletConnectionState(WalletConnectionState.CONNECTED)
+      setSuccessMsg('Cere Wallet connected')
+    } catch (error) {
+      console.log(error)
+      setError(`Something went wrong: ${error}`)
+    }
+  }
+
+  const send = async () => {
+    setDispatching(true)
+    try {
+      const payload = { // Payload is a json object that can include any fields and can be empty.
         anyParam: 'any value',
       }
+
       const activityEvent = new ActivityEvent('WALLET_CONNECT_TEST', payload)
 
-      await eventSource.dispatchEvent(activityEvent)
-      setSuccessMsg('Event dispatched successfully')
+      if (eventSource) {
+        await eventSource.dispatchEvent(activityEvent)
+        setSuccessMsg('Event dispatched successfully')
+      } else {
+        throw new Error('Event source is not ready')
+      }
     } catch (error) {
       console.log(error)
       setError(`Something went wrong: ${error}`)
@@ -106,8 +113,8 @@ function App () {
           </div>
         )
       }
-      {successMsg && <div style={{color: 'green'}}>{successMsg}</div>}
-      {error && <div style={{color: 'red'}}>{error}</div>}
+      {successMsg && <div style={{ color: 'green' }}>{successMsg}</div>}
+      {error && <div style={{ color: 'red' }}>{error}</div>}
     </>
   )
 }

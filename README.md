@@ -68,6 +68,8 @@ await cereWalletCipher.isReady();
 
 OR use `NoOpCipher` if you don't need your data to be encrypted. 
 ```tsx
+import { NoOpCipher } from '@cere-activity-sdk/ciphers';
+
 const cereWalletCipher = new NoOpCipher() 
 await cereWalletCipher.isReady();
 ```

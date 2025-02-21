@@ -102,9 +102,6 @@ await eventSource.dispatchEvent(activityEvent);
 
 ## Testing
 
-```bash
-cp .env .env
-``` 
 Ask Cere Team to provide you all the values.
 ```bash
 npm i

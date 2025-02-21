@@ -26,6 +26,7 @@ function App () {
     try {
       await wallet.init({
         appId: 'cere-data-wallet-integration-example',
+        env: import.meta.env.VITE_ENV,
         connectOptions: {
           permissions: {
             ed25519_signRaw: {
